@@ -1,0 +1,8 @@
+rvm:
+  - 2.5.*
+  - 2.6.*
+gemfile:
+  - Gemfile
+  - Gemfile.v0.12
+before_install:
+  - gem update bundler
