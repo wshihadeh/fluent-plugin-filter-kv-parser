@@ -27,10 +27,10 @@ module Fluent
       log_line = extract_log_line record[@key]
       log_line.split(@keys_delimiter).each do |kv|
         key, value = kv.split(@kv_delimiter_chart, 2)
-        record[key] = value
+        record[key] = value if value
       end
 
-      record.tap { |r| r.delete(@key) if @remove_key }
+      record.tap { |r| r.delete(@key) if @remove_key }.compact
     end
 
     private
