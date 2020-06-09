@@ -25,6 +25,7 @@ gem install fluent-plugin-filter-kv-parser
   remove_prefix /^prefix/
   keys_delimiter /\s+/
   kv_delimiter_chart '='
+  filtered_keys akey,bkey,ckey
 </filter>
 
 <match **>

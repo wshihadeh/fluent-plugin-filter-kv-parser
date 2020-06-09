@@ -11,6 +11,8 @@ module Fluent
     config_param :remove_prefix, :string, default: ''
     config_param :keys_delimiter, :string, default: '/\s+/'
     config_param :kv_delimiter_chart, :string, default: '='
+    config_param :filtered_keys, :string, default: nil
+    config_param :filtered_keys_delimiter, :string, default: ','
 
 
     def configure(conf)
@@ -22,6 +24,8 @@ module Fluent
       if @remove_prefix[0] == '/' and @remove_prefix[-1] == '/'
         @remove_prefix = Regexp.new(@remove_prefix[1..-2])
       end
+
+      @filtered_keys_list = parse_filtered_keys_parameter
     end
 
     def filter(tag, time, record)
@@ -30,11 +34,13 @@ module Fluent
       log_line = extract_log_line record[@key]
 
       if @use_regex
-        record.merge! regex_filter(log_line)
+        extracted_keys = regex_filter(log_line)
       else
-        record.merge! delimiter_filter(log_line)
+        extracted_keys = delimiter_filter(log_line)
       end
 
+      extracted_keys = extracted_keys.slice(*@filtered_keys_list) unless @filtered_keys_list.empty?
+      record.merge! extracted_keys
       record.tap { |r| r.delete(@key) if @remove_key }.compact
     end
 
@@ -51,6 +57,10 @@ module Fluent
         items[key] = value if value
       end
       items
+    end
+
+    def parse_filtered_keys_parameter
+      @filtered_keys.to_s.split(@filtered_keys_delimiter)
     end
 
     def extract_log_line(line)
