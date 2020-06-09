@@ -48,7 +48,7 @@ module Fluent
     private
 
     def regex_filter(line)
-      "#{line} ".scan(/(?<key>[a-zA-Z_0-9]+)=(?<value>[^=]+)\s/).to_h
+      "#{line} ".scan(/(?<key>[a-zA-Z_0-9]+)=(?<value>[^ ]+)\s/).to_h
     end
 
     def extracted_keys(line)
