@@ -20,6 +20,8 @@ gem install fluent-plugin-filter-kv-parser
 <filter **>
   type key_value_parser
   key log
+  use_regex true
+  remove_key false
   remove_prefix /^prefix/
   keys_delimiter /\s+/
   kv_delimiter_chart '='
