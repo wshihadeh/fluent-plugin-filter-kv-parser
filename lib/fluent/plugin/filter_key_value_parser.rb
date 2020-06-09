@@ -12,17 +12,25 @@ module Fluent
     config_param :keys_delimiter, :string, default: '/\s+/'
     config_param :kv_delimiter_chart, :string, default: '='
     config_param :filtered_keys, :string, default: nil
+    config_param :filtered_keys_regex, :string, default: nil
     config_param :filtered_keys_delimiter, :string, default: ','
 
 
     def configure(conf)
       super
-      if @keys_delimiter[0] == '/' and @keys_delimiter[-1] == '/'
+
+      regex = /^\/.+\/$/
+
+      if regex.match(@keys_delimiter.to_s)
         @keys_delimiter = Regexp.new(@keys_delimiter[1..-2])
       end
 
-      if @remove_prefix[0] == '/' and @remove_prefix[-1] == '/'
+      if regex.match(@remove_prefix.to_s)
         @remove_prefix = Regexp.new(@remove_prefix[1..-2])
+      end
+
+      if regex.match(@filtered_keys_regex.to_s)
+         @filtered_keys_regex = Regexp.new(@filtered_keys_regex[1..-2])
       end
 
       @filtered_keys_list = parse_filtered_keys_parameter
@@ -33,14 +41,7 @@ module Fluent
 
       log_line = extract_log_line record[@key]
 
-      if @use_regex
-        extracted_keys = regex_filter(log_line)
-      else
-        extracted_keys = delimiter_filter(log_line)
-      end
-
-      extracted_keys = extracted_keys.slice(*@filtered_keys_list) unless @filtered_keys_list.empty?
-      record.merge! extracted_keys
+      record.merge! extracted_keys(log_line)
       record.tap { |r| r.delete(@key) if @remove_key }.compact
     end
 
@@ -48,6 +49,12 @@ module Fluent
 
     def regex_filter(line)
       "#{line} ".scan(/(?<key>[a-zA-Z_0-9]+)=(?<value>[^=]+)\s/).to_h
+    end
+
+    def extracted_keys(line)
+      keys = @use_regex ? regex_filter(line) : delimiter_filter(line)
+      filtered_keys = @filtered_keys_list.empty? ? keys : keys.slice(*@filtered_keys_list)
+      @filtered_keys_regex.nil? ? filtered_keys : filtered_keys.merge(keys.select{ |k,v| @filtered_keys_regex.match(k.to_s)})
     end
 
     def delimiter_filter(line)

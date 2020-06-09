@@ -168,4 +168,24 @@ class KeyValueFilterTest < Test::Unit::TestCase
     assert_equal "'this is a miltispace line'", filtered['skey']
     assert_equal false,  filtered.key?("log")
   end
+
+  test 'test_filter_keys_with_regex' do
+    d = create_driver(%[
+        key log
+        remove_key true
+        remove_prefix /^[^ ]+\s[^ ]+/
+        use_regex true
+        filtered_keys key,gkeyn,nkey,skey,akey,zkey
+        filtered_keys_regex /^sub_[a-zA-Z_0-9]+/
+      ])
+    msg = {
+      'time' => '2013-02-12 22:01:15 UTC',
+      'log'  => "Start Request sub_key=0 sub_akey=11 sub_zkey=12 key=10 gkey=100 nkey=108 skey='this is a miltispace line' akey=20 zkey=30 dkey=4",
+    }
+    filtered = filter(d, [msg]).first[2]
+    assert_equal 9, filtered.count
+    assert_equal "'this is a miltispace line'", filtered['skey']
+    assert_equal "0", filtered['sub_key']
+    assert_equal false,  filtered.key?("log")
+  end
 end

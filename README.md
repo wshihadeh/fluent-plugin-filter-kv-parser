@@ -26,6 +26,7 @@ gem install fluent-plugin-filter-kv-parser
   keys_delimiter /\s+/
   kv_delimiter_chart '='
   filtered_keys akey,bkey,ckey
+  filtered_keys_regex /^sub_[a-zA-Z_0-9]+/
 </filter>
 
 <match **>
