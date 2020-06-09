@@ -3,7 +3,7 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "fluent-plugin-filter-kv-parser"
-  s.version     = "0.0.2"
+  s.version     = "0.0.3"
   s.authors     = ["Al-waleed Shihadeh"]
   s.email       = ["wshihadeh.dev@gmail.com"]
   s.homepage    = "https://github.com/wshihadeh/fluent-plugin-filter-kv-parser.git"
