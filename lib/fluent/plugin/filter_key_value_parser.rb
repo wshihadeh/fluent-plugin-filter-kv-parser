@@ -7,6 +7,7 @@ module Fluent
 
     config_param :key, :string, default: 'log'
     config_param :remove_key, :bool, default: false
+    config_param :filter_out_lines_without_keys, :bool, default: false
     config_param :use_regex, :bool, default: false
     config_param :remove_prefix, :string, default: ''
     config_param :keys_delimiter, :string, default: '/\s+/'
@@ -39,9 +40,11 @@ module Fluent
     def filter(tag, time, record)
       return if record[@key].nil?
 
-      log_line = extract_log_line record[@key]
+      keys = extracted_keys(extract_log_line(record[@key]))
 
-      record.merge! extracted_keys(log_line)
+      return if @filter_out_lines_without_keys && keys.empty?
+
+      record.merge! keys
       record.tap { |r| r.delete(@key) if @remove_key }.compact
     end
 

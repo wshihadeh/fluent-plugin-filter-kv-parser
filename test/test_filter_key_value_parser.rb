@@ -188,4 +188,28 @@ class KeyValueFilterTest < Test::Unit::TestCase
     assert_equal "0", filtered['sub_key']
     assert_equal false,  filtered.key?("log")
   end
+
+  test 'test_filter_out_lines_without_keys' do
+    d = create_driver(%[
+        key log
+        remove_key true
+        use_regex true
+        filtered_keys_regex /^sub_[a-zA-Z_0-9]+/
+        filter_out_lines_without_keys true
+      ])
+    msg = {
+      'time' => '2013-02-12 22:01:15 UTC',
+      'log'  => "akey=10 bkey=11 ckey=11",
+    }
+
+    msg2 = {
+      'time' => '2013-02-12 22:01:15 UTC',
+      'log'  => "Start Request to test lines without any keys",
+    }
+    filtered = filter(d, [msg, msg2])
+
+    assert_equal 1, filtered.count
+    assert_equal 4, filtered.first[2].count
+    assert_equal "10", filtered.first[2]['akey']
+  end
 end
