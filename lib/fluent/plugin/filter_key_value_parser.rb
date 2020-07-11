@@ -11,7 +11,7 @@ module Fluent
     config_param :use_regex, :bool, default: false
     config_param :remove_prefix, :string, default: ''
     config_param :keys_delimiter, :string, default: '/\s+/'
-    config_param :kv_delimiter_chart, :string, default: '='
+    config_param :kv_delimiter_char, :string, default: '='
     config_param :filtered_keys, :string, default: nil
     config_param :filtered_keys_regex, :string, default: nil
     config_param :filtered_keys_delimiter, :string, default: ','
@@ -63,7 +63,7 @@ module Fluent
     def delimiter_filter(line)
       items = {}
       line.split(@keys_delimiter).each do |kv|
-        key, value = kv.split(@kv_delimiter_chart, 2)
+        key, value = kv.split(@kv_delimiter_char, 2)
         items[key] = value if value
       end
       items
