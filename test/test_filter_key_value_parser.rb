@@ -216,7 +216,7 @@ class KeyValueFilterTest < Test::Unit::TestCase
   test 'test_add_prefix' do
     d = create_driver(%[
         key log
-        add_prefix test.
+        add_prefix test
       ])
     msg = {
       'time'      => '2013-02-12 22:01:15 UTC',
