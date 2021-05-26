@@ -213,10 +213,10 @@ class KeyValueFilterTest < Test::Unit::TestCase
     assert_equal "10", filtered.first[2]['akey']
   end
 
-  test 'test_add_prefix' do
+  test 'test_keys_prefix' do
     d = create_driver(%[
         key log
-        add_prefix test
+        keys_prefix test
       ])
     msg = {
       'time'      => '2013-02-12 22:01:15 UTC',
