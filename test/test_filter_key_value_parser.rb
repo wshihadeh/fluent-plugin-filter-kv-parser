@@ -212,4 +212,18 @@ class KeyValueFilterTest < Test::Unit::TestCase
     assert_equal 4, filtered.first[2].count
     assert_equal "10", filtered.first[2]['akey']
   end
+
+  test 'test_keys_prefix' do
+    d = create_driver(%[
+        key log
+        keys_prefix test
+      ])
+    msg = {
+      'time'      => '2013-02-12 22:01:15 UTC',
+      'log'      => 'Start Request key=10 akey=20 zkey=30 dkey=40',
+    }
+    filtered = filter(d, [msg]).first[2]
+    assert_equal false,  filtered.key?("key")
+    assert_equal true,  filtered.key?("test.key")
+  end
 end

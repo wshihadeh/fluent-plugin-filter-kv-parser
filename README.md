@@ -28,6 +28,7 @@ gem install fluent-plugin-filter-kv-parser
   filtered_keys akey,bkey,ckey
   filtered_keys_regex /^sub_[a-zA-Z_0-9]+/
   filter_out_lines_without_keys false
+  keys_prefix prefix
 </filter>
 
 <match **>

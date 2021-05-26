@@ -15,6 +15,7 @@ module Fluent
     config_param :filtered_keys, :string, default: nil
     config_param :filtered_keys_regex, :string, default: nil
     config_param :filtered_keys_delimiter, :string, default: ','
+    config_param :keys_prefix, :string, default: nil
 
 
     def configure(conf)
@@ -57,7 +58,8 @@ module Fluent
     def extracted_keys(line)
       keys = @use_regex ? regex_filter(line) : delimiter_filter(line)
       filtered_keys = @filtered_keys_list.empty? ? keys : keys.slice(*@filtered_keys_list)
-      @filtered_keys_regex.nil? ? filtered_keys : filtered_keys.merge(keys.select{ |k,v| @filtered_keys_regex.match(k.to_s)})
+      filtered_keys = @filtered_keys_regex.nil? ? filtered_keys : filtered_keys.merge(keys.select{ |k,v| @filtered_keys_regex.match(k.to_s)})
+      @keys_prefix.nil? ? filtered_keys : filtered_keys.transform_keys!{ |key| "#{@keys_prefix}.#{key}" }
     end
 
     def delimiter_filter(line)
